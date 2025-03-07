@@ -1,6 +1,7 @@
 import pytest
 import os
 from dotenv import load_dotenv
+import mysql.connector
 
 load_dotenv()
 
@@ -11,12 +12,9 @@ port = os.getenv("PORT")
 user = os.getenv("USER")
 password = os.getenv("PASSWORD")
 
+
 @pytest.fixture
 def conexao():
     return mysql.connector.connect(
-        host=host,
-        user=user,
-        password=password,
-        database=database_name
+        host=host, user=user, password=password, database=database_name
     )
-
