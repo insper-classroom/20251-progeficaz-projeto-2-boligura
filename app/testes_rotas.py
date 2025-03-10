@@ -6,19 +6,20 @@ from servidor import listar_todos_imoveis
 
 load_dotenv()
 
-service_URI = os.getenv("SERVICE_URI")
-database_name = os.getenv("DATABASE_NAME")
-host = os.getenv("HOST")
-port = os.getenv("PORT")
-user = os.getenv("USER")
-password = os.getenv("PASSWORD")
+SERVICE_URI = os.getenv("SERVICE_URI")
+DATABASE_NAME = os.getenv("DATABASE_NAME")
+HOST = os.getenv("HOST")
+PORT = os.getenv("PORT")
+USER = os.getenv("USER")
+PASSWORD = os.getenv("PASSWORD")
 
 
 @pytest.fixture
 def conexao():
     return mysql.connector.connect(
-        host=host, user=user, password=password, database=database_name
+        host=HOST, user=USER, password=PASSWORD, database=DATABASE_NAME
     )
+
 
 def test_listagem_imoveis(conexao):
     imoveis = listar_todos_imoveis(conexao)
