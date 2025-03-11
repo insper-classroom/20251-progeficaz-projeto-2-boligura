@@ -97,3 +97,27 @@ def test_atualizar_imovel(client):
     assert response.json["logradouro"] == "Rua Atualizada"
     assert response.json["valor"] == 280000.00
     assert response.json["id"] == id_imovel
+
+
+def test_listar_imoveis_por_tipo(client):
+    # Adiciona um imóvel
+    novo_imovel = {
+        "logradouro": "Avenida Teste",
+        "tipo_logradouro": "Avenida",
+        "bairro": "Centro",
+        "cidade": "Cidade Teste",
+        "cep": "12345-678",
+        "tipo": "apartamento",
+        "valor": 250000.00,
+        "data_aquisicao": "2025-03-11",
+    }
+    response = client.post("/imoveis", json=novo_imovel)
+    tipo = novo_imovel["tipo"]
+
+    # Busca imóveis por tipo
+    response = client.get(f"/imoveis/tipo/{tipo}")
+    assert response.status_code == 200
+    assert isinstance(response.json, list)
+
+    if response.json:
+        assert response.json[0]["tipo"] == tipo
