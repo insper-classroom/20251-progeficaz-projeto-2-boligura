@@ -49,4 +49,3 @@ def test_adicionar_imovel(client):
     assert dados_resposta["estado"] == novo_imovel["estado"]
     assert dados_resposta["preco"] == novo_imovel["preco"]
     assert dados_resposta["tipo"] == novo_imovel["tipo"]
-
