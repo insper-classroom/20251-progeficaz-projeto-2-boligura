@@ -70,3 +70,30 @@ def test_adicionar_imovel(client):
     assert dados_resposta["tipo"] == novo_imovel["tipo"]
     assert dados_resposta["valor"] == novo_imovel["valor"]
     assert dados_resposta["data_aquisicao"] == novo_imovel["data_aquisicao"]
+
+
+def test_atualizar_imovel(client):
+    # Primeiro adiciona um imóvel
+    novo_imovel = {
+        "logradouro": "Avenida Teste",
+        "tipo_logradouro": "Avenida",
+        "bairro": "Centro",
+        "cidade": "Cidade Teste",
+        "cep": "12345-678",
+        "tipo": "Apartamento",
+        "valor": 250000.00,
+        "data_aquisicao": "2025-03-11",
+    }
+    response = client.post("/imoveis", json=novo_imovel)
+    id_imovel = response.json["id"]
+
+    # Depois atualiza esse imóvel
+    imovel_atualizado = novo_imovel.copy()
+    imovel_atualizado["logradouro"] = "Rua Atualizada"
+    imovel_atualizado["valor"] = 280000.00
+
+    response = client.put(f"/imoveis/{id_imovel}", json=imovel_atualizado)
+    assert response.status_code == 200
+    assert response.json["logradouro"] == "Rua Atualizada"
+    assert response.json["valor"] == 280000.00
+    assert response.json["id"] == id_imovel
