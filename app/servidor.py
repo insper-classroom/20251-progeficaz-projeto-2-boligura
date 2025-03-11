@@ -136,5 +136,20 @@ def atualizar_imovel(id_imovel):
     return jsonify(dados)
 
 
+@app.route("/imoveis/tipo/<tipo>", methods=["GET"])
+def listar_imoveis_por_tipo(tipo):
+    """Lista todos os imóveis de um determinado tipo."""
+    conexao = get_db_connection()
+    cursor = conexao.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM imoveis WHERE tipo = %s", (tipo,))
+    imoveis = cursor.fetchall()
+
+    cursor.close()
+    conexao.close()
+
+    return jsonify(imoveis)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
