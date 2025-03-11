@@ -89,5 +89,52 @@ def adicionar_imovel():
     return jsonify(dados), 201
 
 
+@app.route("/imoveis/<int:id_imovel>", methods=["PUT"])
+def atualizar_imovel(id_imovel):
+    """Atualiza um imóvel existente pelo seu ID."""
+    dados = request.get_json()
+    conexao = get_db_connection()
+    cursor = conexao.cursor(dictionary=True)
+
+    # Verificar se o imóvel existe
+    cursor.execute("SELECT * FROM imoveis WHERE id = %s", (id_imovel,))
+    if not cursor.fetchone():
+        cursor.close()
+        conexao.close()
+        return jsonify({"erro": "Imóvel não encontrado"}), 404
+
+    query = """
+    UPDATE imoveis SET
+    logradouro = %s,
+    tipo_logradouro = %s,
+    bairro = %s,
+    cidade = %s,
+    cep = %s,
+    tipo = %s,
+    valor = %s,
+    data_aquisicao = %s
+    WHERE id = %s
+    """
+    valores = (
+        dados["logradouro"],
+        dados["tipo_logradouro"],
+        dados["bairro"],
+        dados["cidade"],
+        dados["cep"],
+        dados["tipo"],
+        dados["valor"],
+        dados["data_aquisicao"],
+        id_imovel,
+    )
+
+    cursor.execute(query, valores)
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+
+    dados["id"] = id_imovel
+    return jsonify(dados)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
