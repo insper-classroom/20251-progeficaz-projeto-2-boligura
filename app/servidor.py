@@ -70,3 +70,16 @@ def adicionar_imovel():
     return jsonify(dados), 201
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route("/imoveis/<int:id>", methods=["DELETE"])
+def remover_imovel(id):
+    conexao = get_db_connection()
+    cursor = conexao.cursor()
+    
+    cursor.execute("DELETE FROM imoveis WHERE id = %s", (id,))
+    conexao.commit()
+    
+    cursor.close()
+    conexao.close()
+    
+    return jsonify({"mensagem": "Imóvel removido com sucesso"}), 200
