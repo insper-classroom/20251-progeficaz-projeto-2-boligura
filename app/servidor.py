@@ -11,15 +11,15 @@ app = Flask(__name__)
 # Configuração do banco de dados
 db_config = {
     "host": os.getenv("HOST"),
+    "port": os.getenv('PORT'),
     "user": os.getenv("USER"),
     "password": os.getenv("PASSWORD"),
     "database": os.getenv("DATABASE_NAME"),
-    "ssl_ca": "ca.pem",
 }
 
 # Rota para listar todos os imóveis
 @app.route('/imoveis', methods=['GET'])
-def listar_imoveis():
+def listagem_imoveis():
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
 
