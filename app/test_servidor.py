@@ -1,6 +1,4 @@
 import pytest
-import mysql.connector
-import os
 from dotenv import load_dotenv
 from servidor import app
 
