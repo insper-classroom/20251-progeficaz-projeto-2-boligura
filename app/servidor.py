@@ -153,3 +153,29 @@ def listar_imoveis_por_tipo(tipo):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/imoveis/<int:id>", methods=["DELETE"])
+def remover_imovel(id):
+    conexao = get_db_connection()
+    cursor = conexao.cursor()
+    
+    cursor.execute("DELETE FROM imoveis WHERE id = %s", (id,))
+    conexao.commit()
+    
+    cursor.close()
+    conexao.close()
+    
+    return jsonify({"mensagem": "Imóvel removido com sucesso"}), 200
+
+@app.route("/imoveis/cidade/<string:cidade>", methods=["GET"])
+def listar_imoveis_por_cidade(cidade):
+    conexao = get_db_connection()
+    cursor = conexao.cursor(dictionary=True)
+    
+    cursor.execute("SELECT * FROM imoveis WHERE cidade = %s", (cidade,))
+    imoveis = cursor.fetchall()
+    
+    cursor.close()
+    conexao.close()
+    
+    return jsonify(imoveis)

@@ -121,3 +121,45 @@ def test_listar_imoveis_por_tipo(client):
 
     if response.json:
         assert response.json[0]["tipo"] == tipo
+
+
+def test_remover_imovel(client):
+    # Primeiro, adiciona um imóvel para garantir que ele existe
+    novo_imovel = {
+        "logradouro": "Rua Removível",
+        "tipo_logradouro": "Rua",
+        "bairro": "Bairro X",
+        "cidade": "Cidade Y",
+        "cep": "98765-432",
+        "tipo": "Casa",
+        "valor": 150000.00,
+        "data_aquisicao": "2025-03-12",
+    }
+
+    response = client.post("/imoveis", json=novo_imovel)
+    assert response.status_code == 201
+    imovel_id = response.json["id"]
+
+    response = client.delete(f"/imoveis/{imovel_id}")
+    assert response.status_code == 200
+    assert response.json["mensagem"] == "Imóvel removido com sucesso"
+
+
+def test_listar_imoveis_por_cidade(client):
+    cidade_teste = "Cidade Teste"
+    response = client.get(f"/imoveis/cidade/{cidade_teste}")
+    assert response.status_code == 200
+
+    imoveis = response.json
+    assert isinstance(imoveis, list)
+    print(imoveis)
+    if imoveis:
+        assert "id" in imoveis[0]
+        assert "logradouro" in imoveis[0]
+        assert "tipo_logradouro" in imoveis[0]
+        assert "bairro" in imoveis[0]
+        assert "cidade" in imoveis[0]
+        assert "cep" in imoveis[0]
+        assert "tipo" in imoveis[0]
+        assert "valor" in imoveis[0]
+        assert "data_aquisicao" in imoveis[0]
