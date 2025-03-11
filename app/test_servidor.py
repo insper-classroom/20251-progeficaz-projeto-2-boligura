@@ -54,3 +54,24 @@ def test_adicionar_imovel(client):
     assert dados_resposta["valor"] == novo_imovel["valor"]
     assert dados_resposta["data_aquisicao"] == novo_imovel["data_aquisicao"]
 
+def test_remover_imovel(client):
+    # Primeiro, adiciona um imóvel para garantir que ele existe
+    novo_imovel = {
+        "logradouro": "Rua Removível",
+        "tipo_logradouro": "Rua",
+        "bairro": "Bairro X",
+        "cidade": "Cidade Y",
+        "cep": "98765-432",
+        "tipo": "Casa",
+        "valor": 150000.00,
+        "data_aquisicao": "2025-03-12"
+    }
+    
+    response = client.post("/imoveis", json=novo_imovel)
+    assert response.status_code == 201
+    imovel_id = response.json["id"]
+
+    response = client.delete(f"/imoveis/{imovel_id}")
+    assert response.status_code == 200
+    assert response.json["mensagem"] == "Imóvel removido com sucesso"
+
