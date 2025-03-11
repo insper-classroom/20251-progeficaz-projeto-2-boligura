@@ -46,16 +46,18 @@ def adicionar_imovel():
     cursor = conexao.cursor(dictionary=True)
     
     query = """
-    INSERT INTO imoveis (logradouro, numero, cidade, estado, preco, tipo)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    INSERT INTO imoveis (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
     valores = (
         dados["logradouro"],
-        dados["numero"],
+        dados.get("tipo_logradouro"),
+        dados.get("bairro"),
         dados["cidade"],
-        dados["estado"],
-        dados["preco"],
-        dados["tipo"]
+        dados.get("cep"),
+        dados.get("tipo"),
+        dados.get("valor"),
+        dados.get("data_aquisicao")
     )
     
     cursor.execute(query, valores)
@@ -66,6 +68,5 @@ def adicionar_imovel():
     
     dados["id"] = novo_id
     return jsonify(dados), 201
-
 if __name__ == '__main__':
     app.run(debug=True)
