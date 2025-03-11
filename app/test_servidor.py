@@ -22,11 +22,28 @@ def test_listagem_imoveis(client):
         assert "id" in response.json[0]  # Verifica se há a chave "id"
 
 
-# def test_obter_imovel_por_id(conexao, imovel_teste):
-#     imovel = obter_imovel_por_id(conexao, imovel_teste)
-#     assert imovel is not None
-#     assert imovel["id"] == imovel_teste
-#     assert imovel["logradouro"] == "Rua de Teste"
+def test_obter_imovel_por_id(client):
+    # Primeiro, vamos adicionar um imóvel para ter certeza que existe um ID
+    novo_imovel = {
+        "logradouro": "Rua Teste ID",
+        "tipo_logradouro": "Rua",
+        "bairro": "Bairro Teste",
+        "cidade": "Cidade Teste",
+        "cep": "12345-678",
+        "tipo": "Casa",
+        "valor": 300000.00,
+        "data_aquisicao": "2025-03-11",
+    }
+
+    response = client.post("/imoveis", json=novo_imovel)
+    id_imovel = response.json["id"]
+
+    # Agora testamos obter esse imóvel
+    imovel = client.get(f"/imoveis/{id_imovel}")
+    assert imovel.status_code == 200
+    assert imovel.json is not None
+    assert imovel.json["id"] == id_imovel
+
 
 def test_adicionar_imovel(client):
     novo_imovel = {
@@ -37,12 +54,12 @@ def test_adicionar_imovel(client):
         "cep": "12345-678",
         "tipo": "Apartamento",
         "valor": 250000.00,
-        "data_aquisicao": "2025-03-11"
+        "data_aquisicao": "2025-03-11",
     }
-    
+
     response = client.post("/imoveis", json=novo_imovel)
     assert response.status_code == 201  # Código HTTP para criação bem-sucedida
-    
+
     dados_resposta = response.json
     assert "id" in dados_resposta  # Verifica se um ID foi retornado
     assert dados_resposta["logradouro"] == novo_imovel["logradouro"]
@@ -53,4 +70,3 @@ def test_adicionar_imovel(client):
     assert dados_resposta["tipo"] == novo_imovel["tipo"]
     assert dados_resposta["valor"] == novo_imovel["valor"]
     assert dados_resposta["data_aquisicao"] == novo_imovel["data_aquisicao"]
-
