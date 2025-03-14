@@ -161,3 +161,22 @@ def test_listar_imoveis_por_cidade(client):
         assert "tipo" in imoveis[0]
         assert "valor" in imoveis[0]
         assert "data_aquisicao" in imoveis[0]
+
+def test_remover_imovel_inexistente(client):
+    response = client.delete("/imoveis/999999")
+    assert response.status_code == 404
+    assert response.json["mensagem"] == "Imóvel não encontrado"
+
+def test_adicionar_imovel_invalido(client):
+    imovel_invalido = {
+        "logradouro": "",  # Campo vazio
+        "tipo_logradouro": "Rua",
+        "bairro": "Bairro Teste",
+        "cidade": "Cidade Teste",
+        "cep": "00000-000",  # CEP inválido
+        "tipo": "Mansão",  # Tipo não permitido?
+        "valor": -50000.00,  # Valor negativo
+        "data_aquisicao": "2100-01-01",  # Data no futuro
+    }
+    response = client.post("/imoveis", json=imovel_invalido)
+    assert response.status_code == 400  # Ou outro código apropriado
