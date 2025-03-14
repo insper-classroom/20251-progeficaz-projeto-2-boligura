@@ -161,3 +161,9 @@ def test_listar_imoveis_por_cidade(client):
         assert "tipo" in imoveis[0]
         assert "valor" in imoveis[0]
         assert "data_aquisicao" in imoveis[0]
+
+def test_remover_imovel_inexistente(client):
+    response = client.delete("/imoveis/999999")
+    assert response.status_code == 404
+    assert response.json["mensagem"] == "Imóvel não encontrado"
+

@@ -1,7 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 import mysql.connector
 import os
 from dotenv import load_dotenv
+import re 
+from datetime import datetime
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -61,6 +63,8 @@ def obter_imovel_por_id(id_imovel):
 @app.route("/imoveis", methods=["POST"])
 def adicionar_imovel():
     dados = request.get_json()
+    validar_dados_imovel(dados)  # Chama a validação antes de inserir no banco
+
     conexao = get_db_connection()
     cursor = conexao.cursor(dictionary=True)
 
@@ -142,7 +146,7 @@ def listar_imoveis_por_tipo(tipo):
     conexao = get_db_connection()
     cursor = conexao.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM imoveis WHERE tipo = %s", (tipo,))
+    cursor.execute("SELECT * FROM imoveis WHERE LOWER(tipo) = LOWER(%s)", (tipo,))
     imoveis = cursor.fetchall()
 
     cursor.close()
@@ -158,14 +162,23 @@ if __name__ == "__main__":
 def remover_imovel(id):
     conexao = get_db_connection()
     cursor = conexao.cursor()
-    
+
+    # Verifica se o imóvel existe
+    cursor.execute("SELECT id FROM imoveis WHERE id = %s", (id,))
+    if not cursor.fetchone():
+        cursor.close()
+        conexao.close()
+        return jsonify({"mensagem": "Imóvel não encontrado"}), 404  # Corrigido para retornar 404
+
+    # Remove o imóvel
     cursor.execute("DELETE FROM imoveis WHERE id = %s", (id,))
     conexao.commit()
-    
+
     cursor.close()
     conexao.close()
-    
+
     return jsonify({"mensagem": "Imóvel removido com sucesso"}), 200
+
 
 @app.route("/imoveis/cidade/<string:cidade>", methods=["GET"])
 def listar_imoveis_por_cidade(cidade):
@@ -179,3 +192,4 @@ def listar_imoveis_por_cidade(cidade):
     conexao.close()
     
     return jsonify(imoveis)
+
